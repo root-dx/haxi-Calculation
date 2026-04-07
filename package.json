@@ -12,7 +12,7 @@
     "build:web": "vite build",
     "build:win": "npm run build && electron-builder --win",
     "build:win-portable": "npm run build && electron-builder --win portable",
-    "build:mac": "npm run build && electron-builder --mac",
+    "build:mac": "npm run build && electron-builder --mac --publish=never",
     "build:mac-dmg": "npm run build && electron-builder --mac dmg",
     "build:all": "npm run build && electron-builder --win --mac",
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\""
