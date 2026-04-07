@@ -15,52 +15,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        
-    - name: Install pnpm
+    - name: Setup pnpm
       uses: pnpm/action-setup@v2
       with:
-        version: latest
-        run_install: false
+        version: 8
         
-    - name: Get pnpm store directory
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-        
-    - name: Setup pnpm cache
-      uses: actions/cache@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        path: ${{ env.STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
-          
+        node-version: '20'
+        cache: 'pnpm'
+        
     - name: Install dependencies
       run: pnpm install --no-frozen-lockfile
       
     - name: Build macOS App
       run: pnpm run build:mac
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Upload ARM64 artifacts
+      
+    - name: List release files
+      run: ls -la release/
+      
+    - name: Upload all artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: hash-calculator-mac-arm64
-        path: |
-          release/*-arm64.dmg
-          release/*-arm64.zip
-        if-no-files-found: ignore
-        
-    - name: Upload x64 artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: hash-calculator-mac-x64
-        path: |
-          release/*-x64.dmg
-          release/*-x64.zip
-        if-no-files-found: ignore
+        name: hash-calculator-mac
+        path: release/*
+        if-no-files-found: warn
